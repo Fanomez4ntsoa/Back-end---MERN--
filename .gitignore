@@ -1,7 +1,5 @@
 # Dossiers
 node_modules/
-build/
-dist/
 
 # Fichiers
 .env
