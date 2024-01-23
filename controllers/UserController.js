@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const UserService = require('../services/UserService');
 const User = require('../models/UserModel');
 const generateToken = require("../utils/generateToken");
+const errorMessage = require('../resources/lang/fr/errorMessage');
 
 /**
  * @description Authentification user
@@ -150,7 +151,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     const userService = new UserService();
 
     try {
-        const userProfile = await userService.getUserProfile(userId);
+        const userProfile = await userService.userProfile(userId);
         res.json(userProfile);
     } catch (error) {
         res.status(404).json({ error: error.message });
