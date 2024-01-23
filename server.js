@@ -4,6 +4,9 @@ const morgan = require('morgan');
 const path = require('path');
 const { notFound, errorHandler } = require('./middlewares/errorMiddleware');
 const databaseConnection = require('./config/connection');
+const UserRoute = require('./routes/UserRoute');
+const ProductRoute = require('./routes/ProductRoute');
+const OrderRoute = require('./routes/OrderRoute');
 
 dotenv.config();
 // Connection base de donnée
@@ -23,10 +26,9 @@ app.use(notFound)
 app.use(errorHandler)
 
 // Routes
-app.get('/api/users');
-app.get('/api/products');
-app.get('/api/orders');
-app.get('/api/upload');
+app.get('/api/users', UserRoute);
+app.get('/api/products', ProductRoute);
+app.get('/api/orders', OrderRoute);
 
 const static = path.resolve()
 app.use('/public/uploads', express.static(path.join(static, '/public/uploads')))
