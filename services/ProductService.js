@@ -1,6 +1,10 @@
 const BaseService = require("./BaseService");
+const ProductServiceInterface = require('../contracts/ProductServiceInterface');
 const Product = require('../models/ProductModel');
 
+/**
+ * @implements (ProductServiceInterface)
+ */
 class ProductService extends BaseService {
 
     /**

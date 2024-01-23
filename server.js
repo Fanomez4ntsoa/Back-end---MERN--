@@ -23,9 +23,10 @@ app.use(notFound)
 app.use(errorHandler)
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('Welcome on the project MERN !')
-});
+app.get('/api/users');
+app.get('/api/products');
+app.get('/api/orders');
+app.get('/api/upload');
 
 const static = path.resolve()
 app.use('/public/uploads', express.static(path.join(static, '/public/uploads')))

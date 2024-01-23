@@ -37,7 +37,7 @@ const createProduct = asyncHandler(async(req, res) => {
 
     try {
       const createdProduct = await productService.create({
-        user,
+        user: req.user._id,
         name,
         image,
         brand,
@@ -65,7 +65,7 @@ const createProduct = asyncHandler(async(req, res) => {
       }
   
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
 });
 

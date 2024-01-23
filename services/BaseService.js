@@ -10,7 +10,7 @@ class BaseService {
 
     async getById(id) {
         try {
-            return this.model.findById(id);
+            return await this.model.findById(id);
         } catch (error) {
             throw new Error(`Error while retrieving this item : ${error.message}`);
         }
