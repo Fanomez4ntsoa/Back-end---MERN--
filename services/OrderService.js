@@ -1,7 +1,10 @@
 const BaseService = require("./BaseService");
-const Order = require('../models/OrderModel');
+const OrderModel = require('../models/OrderModel');
 
 class OrderService extends BaseService {
+    constructor() {
+        super(OrderModel);
+    }
 
     /**
      * Récuperer tous les commandes
@@ -10,7 +13,7 @@ class OrderService extends BaseService {
      */
     async allOrders() {
         try {
-            return await Order.find({});
+            return await OrderModel.find({});
         } catch (error) {
             throw new Error(`Error on getting all orders : ${error.message}`)
         }
@@ -24,10 +27,10 @@ class OrderService extends BaseService {
      */
     async updateOrderPaid(orderId, paymentInfo) {
         try {
-            const order = await Order.getById(orderId)
+            const order = await OrderModel.getById(orderId)
 
             if(!order) {
-                throw new Error(`${Order.modelName} not found`);
+                throw new Error(`${OrderModel.modelName} not found`);
             } else {
                 order.isPaid = true;
                 order.paidAt = Date.now();
@@ -77,7 +80,7 @@ class OrderService extends BaseService {
      */
     async getMyOrders(userId) {
         try {
-            const orders = await Order.find({ user: userId });
+            const orders = await OrderModel.find({ user: userId });
             return orders;
         } catch (error) {
             throw new Error(`Error on getting user orders: ${error.message}`);

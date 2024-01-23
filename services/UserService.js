@@ -1,11 +1,15 @@
 const BaseService = require("./BaseService");
 const UserServiceInterface = require('../contracts/UserServiceInterface');
-const User = require('../models/UserModel');
+const UserModel = require('../models/UserModel');
+const generateToken = require("../utils/generateToken");
 
 /**
  * @implements (UserServiceInterface)
  */
 class UserService extends BaseService {
+    constructor() {
+        super(UserModel);
+    }
 
     /**
      * Authentification
@@ -15,7 +19,7 @@ class UserService extends BaseService {
      */
     async authentificationUser(email, password) {
         try {
-            const user = await User.findOne({ email });
+            const user = await UserModel.findOne({ email });
             if (user && (await user.matchPassword(password))) {
                 return {
                     _id: user._id,
@@ -38,7 +42,7 @@ class UserService extends BaseService {
      */
     async allUsers() {
         try {
-            return await User.find({})
+            return await UserModel.find({})
         } catch (error) {
             throw new Error(`Error on getting all users : ${error.message}`)
         }

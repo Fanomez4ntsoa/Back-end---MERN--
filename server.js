@@ -11,7 +11,6 @@ const OrderRoute = require('./routes/OrderRoute');
 dotenv.config();
 // Connection base de donnée
 databaseConnection();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ENV = process.env.NODE_ENV === 'development';
@@ -20,18 +19,22 @@ if(ENV) {
     app.use(morgan('dev'));
 }
 
-// Middleware pour gérer le corps des requêtes JSOn
 app.use(express.json());
-app.use(notFound)
-app.use(errorHandler)
 
 // Routes
-app.get('/api/users', UserRoute);
-app.get('/api/products', ProductRoute);
-app.get('/api/orders', OrderRoute);
+app.get('/api/', (req, res) => {
+    res.send('API is running....')
+  })
+app.use('/api/users', UserRoute);
+app.use('/api/products', ProductRoute);
+app.use('/api/orders', OrderRoute);
 
+// Middleware pour gérer le corps des requêtes JSOn
 const static = path.resolve()
 app.use('/public/uploads', express.static(path.join(static, '/public/uploads')))
+
+app.use(notFound)
+app.use(errorHandler)
 
 // Ecoute du serveur sur le port spécifique
 app.listen(

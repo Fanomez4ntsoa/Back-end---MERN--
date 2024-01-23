@@ -1,11 +1,14 @@
 const BaseService = require("./BaseService");
 const ProductServiceInterface = require('../contracts/ProductServiceInterface');
-const Product = require('../models/ProductModel');
+const ProductModel = require("../models/ProductModel");
 
 /**
  * @implements (ProductServiceInterface)
  */
 class ProductService extends BaseService {
+    constructor() {
+        super(ProductModel);
+    }
 
     /**
      * Récuperer tous les produits
@@ -83,7 +86,7 @@ class ProductService extends BaseService {
      * @returns {Promise<Array>}
      */
     async topProducts() {
-        return Product.find({}).sort({range: -1}).limit(3);
+        return ProductModel.find({}).sort({range: -1}).limit(3);
     }
 }
 

@@ -1,4 +1,5 @@
 const BaseServiceInterface = require("../contracts/BaseServiceInterface");
+const User = require('../models/UserModel');
 
 /**
  * @implements (BaseServiceInterface)

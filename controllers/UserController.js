@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const UserService = require('../services/UserService');
 const User = require('../models/UserModel');
+const generateToken = require("../utils/generateToken");
 
 /**
  * @description Authentification user
@@ -26,7 +27,22 @@ const login = asyncHandler(async(req, res) => {
  */
 const register = asyncHandler(async(req, res) => {
     const userService = new UserService();
+    if (!req.body) {
+        res.status(400).json({ error: 'Request body is missing' });
+        return;
+    }
     const { name, email, password } = req.body;
+    
+    if (!name) {
+        res.status(400).json({ error: 'Name is required' });
+        return;
+    } else if (!email) {
+        res.status(400).json({ error: 'Email is required' });
+        return;
+    } else if (!password) {
+        res.status(400).json({ error: 'Password is required' });
+        return;
+    }
 
     try {
         const userExists = await User.findOne({ email })
@@ -35,12 +51,13 @@ const register = asyncHandler(async(req, res) => {
             res.status(400)
             throw new Error('User already exists')
         }
+        
         const createdUser = await userService.create({ 
             name,
             email,
             password
         });
-
+        
         if(createdUser) {
             res.status(201).json({
                 _id: createdUser._id,
@@ -50,8 +67,8 @@ const register = asyncHandler(async(req, res) => {
                 token: generateToken(createdUser._id),
                 })
             } else {
-                res.status(400)
-                throw new Error('Invalid user data')
+            res.status(400)
+            throw new Error('Invalid user data')
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
