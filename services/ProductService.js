@@ -11,7 +11,7 @@ class ProductService extends BaseService {
      * @param {string} keywords 
      * @returns 
      */
-    async allProduct(pageNumber = 1, pageSize = 10, keywords = '') {
+    async allProducts(pageNumber = 1, pageSize = 10, keywords = '') {
         const skip = pageSize * (pageNumber - 1);
         const query = keyword ? {
             name: { 
@@ -29,7 +29,7 @@ class ProductService extends BaseService {
         return {
             products,
             page: pageNumber,
-            pages: Math.call(count / pageSize),
+            pages: Math.ceil(count / pageSize),
         };
     }
 
