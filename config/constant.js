@@ -1,10 +1,11 @@
-const PATTERN_GMAIL = 'gmail.com';
-const PATTERN_YAHOO = 'yahoo.com';
-const PATTERN_OUTLOOK = 'outlook.com';
-const PATTERN_MAIL = 'hotmail.com';
-const PATTERN_CLOUD = 'icloud.com';
-const PATTERN_MICROSOFT = 'live.com';
-
-const PATTERN_EXTENSION_GMAIL = 'com';
-const PATTERN_EXTENSION_YAHOO = 'yahoo';
-const PATTERN_EDU = 'edu';
+module.exports = {
+    PATTERN_GMAIL: 'gmail',
+    PATTERN_YAHOO: 'yahoo',
+    PATTERN_OUTLOOK: 'outlook',
+    PATTERN_MAIL: 'hotmail',
+    PATTERN_CLOUD: 'icloud',
+    PATTERN_MICROSOFT: 'live',
+    PATTERN_EXTENSION_GMAIL: 'com',
+    PATTERN_EXTENSION_YAHOO: 'yahoo',
+    PATTERN_EDU: 'edu',
+};

@@ -1,9 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const UserService = require('../services/UserService');
 const User = require('../models/UserModel');
-const generateToken = require("../utils/generateToken");
 const EmailHelper = require("../utils/emailHelper");
+const generateToken = require("../utils/generateToken");
 const errorMessage = require('../resources/lang/fr/errorMessage');
+const successMessage = require('../resources/lang/fr/successMessage');
 
 /**
  * @description Authentification user
@@ -55,20 +56,21 @@ const register = asyncHandler(async(req, res) => {
     
 
     try {
-        const userExists = await User.findOne({ email })
-        const email_valid = EmailHelper.isValidEmail(email);
 
+        const userExists = await User.findOne({ email })
+        
         if (userExists) {
             res.status(409).json({ message: errorMessage.user.already_exist });
         }
-        if(!email_valid) {
-            res.status(404).json({ message: errorMessage.user.invalid_email })
+        const isValidEmail = EmailHelper.isValidEmail(email);
+        
+        if(!isValidEmail) {
+            return res.status(400).json({ message: errorMessage.user.invalid_email })
         }
-
         const createdUser = await userService.create({
             firstname, 
             lastname,
-            email_valid,
+            email,
             password
         });
         
