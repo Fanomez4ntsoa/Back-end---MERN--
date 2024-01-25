@@ -2,6 +2,9 @@ const BaseService = require("./BaseService");
 const UserServiceInterface = require('../contracts/UserServiceInterface');
 const UserModel = require('../models/UserModel');
 const generateToken = require("../utils/generateToken");
+const bcrypt = require('bcryptjs');
+const errorMessage = require('../resources/lang/fr/errorMessage');
+const successMessage = require('../resources/lang/fr/successMessage');
 
 /**
  * @implements (UserServiceInterface)
@@ -20,19 +23,26 @@ class UserService extends BaseService {
     async authentificationUser(email, password) {
         try {
             const user = await UserModel.findOne({ email });
-            if (user && (await user.matchPassword(password))) {
-                return {
+            if(user === null) {
+                res.status(404).json({ message: errorMessage.auth.email });
+            }
+            if(!await user.matchPassword(password)) {
+                res.status(401).json({ message: errorMessage.auth.password });
+            }
+            return {
+                message: successMessage.default,
+                data: {
                     _id: user._id,
-                    name: user.name,
                     email: user.email,
-                    isAdmin: user.isAdmin,
-                    token: generateToken(user._id),
-                };
-            } else {
-                throw new Error('Invalid email or password');
-            } 
+                    password: user.password,
+                    token: generateToken(user._id)
+                }
+            };
         } catch (error) {
-            throw new Error(`Error on user authentication: ${error.message}`);
+            throw new Error(
+                errorMessage.default + 
+                error.message
+            );
         }
     }
 
@@ -58,10 +68,14 @@ class UserService extends BaseService {
         try {
             const user = await this.getById(userId);
             return {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                isAdmin: user.isAdmin,
+                message: 'Profile successful recovery',
+                data: {
+                    _id: user._id,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                }
             };
         } catch (error) {
             throw new Error(`Error on getting user profile: ${error.message}`);
@@ -80,10 +94,19 @@ class UserService extends BaseService {
             const user = await this.getById(userId);
     
             if (user) {
-                user.name = data.name || user.name;
+                user.firstname = data.firstname || user.firstname;
+                user.lastname = data.lastname || user.lastname;
                 user.email = data.email || user.email;
                 
                 if (data.password) {
+                    if(!data.confirmPassword) {
+                        throw new Error('Confirm password is required when updating password');
+                    }
+
+                    if (data.password !== data.confirmPassword) {
+                        throw new Error('Password and confirm password do not match');
+                    }
+
                     const salt = await bcrypt.genSalt(10);
                     user.password = await bcrypt.hash(data.password, salt);
                 }
@@ -91,7 +114,8 @@ class UserService extends BaseService {
                 const updatedUser = await this.update(userId, user);
                 return {
                     _id: updatedUser._id,
-                    name: updatedUser.name,
+                    firstname: updatedUser.firstname,
+                    lastname: updatedUser.lastname,
                     email: updatedUser.email,
                     isAdmin: updatedUser.isAdmin,
                     token: generateToken(updatedUser._id),

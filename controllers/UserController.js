@@ -14,9 +14,14 @@ const login = asyncHandler(async(req, res) => {
 
     try {
         const authenticatedUser = await userService.authentificationUser(email, password);
-        res.json(authenticatedUser);
+        if(authenticatedUser) {
+            res.json(authenticatedUser);
+        } else {
+            res.status(401).json({ error: errorMessage.validations });    
+        }
+        
     } catch (error) {
-        res.status(401).json({ error: error.message });
+        res.status(500).json({ error: errorMessage.default });
     }
 });
 
@@ -28,13 +33,16 @@ const login = asyncHandler(async(req, res) => {
 const register = asyncHandler(async(req, res) => {
     const userService = new UserService();
     if (!req.body) {
-        res.status(400).json({ error: 'Request body is missing' });
+        res.status(400).json({ message: error.body_request });
         return;
     }
-    const { name, email, password } = req.body;
+    const { firstname, lastname, email, password } = req.body;
     
-    if (!name) {
-        res.status(400).json({ error: 'Name is required' });
+    if (!firstname) {
+        res.status(400).json({ error: 'Firstname is required' });
+        return;
+    } else if (!lastname) {
+        res.status(400).json({ error: 'Lastname is required' });
         return;
     } else if (!email) {
         res.status(400).json({ error: 'Email is required' });
@@ -52,8 +60,9 @@ const register = asyncHandler(async(req, res) => {
             throw new Error('User already exists')
         }
         
-        const createdUser = await userService.create({ 
-            name,
+        const createdUser = await userService.create({
+            firstname, 
+            lastname,
             email,
             password
         });
@@ -61,7 +70,8 @@ const register = asyncHandler(async(req, res) => {
         if(createdUser) {
             res.status(201).json({
                 _id: createdUser._id,
-                name: createdUser.name,
+                firstname: createdUser.firstname,
+                lastname: createdUser.lastname,
                 email: createdUser.email,
                 isAdmin: createdUser.isAdmin,
                 token: generateToken(createdUser._id),
@@ -105,7 +115,8 @@ const getUserById = asyncHandler(async(req, res) => {
         if(user) {
             res.status(200).json({
                 _id: user._id,
-                name: user.name,
+                firstname: user.firstname,
+                lastname: user.lastname,
                 email: user.email,
                 isAdmin: user.isAdmin,
                 })
