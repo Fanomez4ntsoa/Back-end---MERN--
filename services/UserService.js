@@ -138,7 +138,7 @@ class UserService extends BaseService {
                     }
                 };
             } else {
-                throw new Error('User not found');
+                throw new Error( errorMessage.user.not_found );
             }
         } catch (error) {
             throw new Error(`Error on updating user profile: ${error.message}`);
