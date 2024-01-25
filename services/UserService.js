@@ -24,12 +24,19 @@ class UserService extends BaseService {
         try {
             const user = await UserModel.findOne({ email });
             if(user === null) {
-                res.status(404).json({ message: errorMessage.auth.email });
+                return {
+                    status: 400,
+                    message: errorMessage.auth.email
+                };
             }
             if(!await user.matchPassword(password)) {
-                res.status(401).json({ message: errorMessage.auth.password });
+                return {
+                    status: 400,
+                    message: errorMessage.auth.password
+                };
             }
             return {
+                status: 200,
                 message: successMessage.default,
                 data: {
                     _id: user._id,

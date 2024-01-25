@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const UserService = require('../services/UserService');
 const User = require('../models/UserModel');
 const generateToken = require("../utils/generateToken");
+const EmailHelper = require("../utils/emailHelper");
 const errorMessage = require('../resources/lang/fr/errorMessage');
 
 /**
@@ -15,14 +16,14 @@ const login = asyncHandler(async(req, res) => {
 
     try {
         const authenticatedUser = await userService.authentificationUser(email, password);
-        if(authenticatedUser) {
-            res.json(authenticatedUser);
+        if(authenticatedUser.error) {
+            res.status(authenticatedUser.status).json({ message: authenticatedUser.message });    
         } else {
-            res.status(401).json({ error: errorMessage.validations });    
+            res.status(authenticatedUser.status).json({ message: authenticatedUser.message, data: authenticatedUser.data});
         }
         
     } catch (error) {
-        res.status(500).json({ error: errorMessage.default });
+        res.status(500).json({ error: error.message});
     }
 });
 
@@ -34,55 +35,60 @@ const login = asyncHandler(async(req, res) => {
 const register = asyncHandler(async(req, res) => {
     const userService = new UserService();
     if (!req.body) {
-        res.status(400).json({ message: error.body_request });
+        res.status(422).json({ message: errorMessage.validations });
         return;
     }
     const { firstname, lastname, email, password } = req.body;
-    
     if (!firstname) {
-        res.status(400).json({ error: 'Firstname is required' });
+        res.status(400).json({ message: errorMessage.user.firstname });
         return;
     } else if (!lastname) {
-        res.status(400).json({ error: 'Lastname is required' });
+        res.status(400).json({ message: errorMessage.user.lastname });
         return;
     } else if (!email) {
-        res.status(400).json({ error: 'Email is required' });
+        res.status(400).json({ message: errorMessage.user.email });
         return;
     } else if (!password) {
-        res.status(400).json({ error: 'Password is required' });
+        res.status(400).json({ message: errorMessage.user.password });
         return;
     }
+    
 
     try {
         const userExists = await User.findOne({ email })
+        const email_valid = EmailHelper.isValidEmail(email);
 
         if (userExists) {
-            res.status(400)
-            throw new Error('User already exists')
+            res.status(409).json({ message: errorMessage.user.already_exist });
         }
-        
+        if(!email_valid) {
+            res.status(404).json({ message: errorMessage.user.invalid_email })
+        }
+
         const createdUser = await userService.create({
             firstname, 
             lastname,
-            email,
+            email_valid,
             password
         });
         
         if(createdUser) {
             res.status(201).json({
-                _id: createdUser._id,
-                firstname: createdUser.firstname,
-                lastname: createdUser.lastname,
-                email: createdUser.email,
-                isAdmin: createdUser.isAdmin,
-                token: generateToken(createdUser._id),
+                message: successMessage.user.created,
+                data: {
+                    _id: createdUser._id,
+                    firstname: createdUser.firstname,
+                    lastname: createdUser.lastname,
+                    email: createdUser.email,
+                    isAdmin: createdUser.isAdmin,
+                    token: generateToken(createdUser._id),
+                    }
                 })
-            } else {
-            res.status(400)
-            throw new Error('Invalid user data')
+        } else {
+        res.status(403).json({ message: errorMessage.default});
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default + error.message });
     }
 })
 
