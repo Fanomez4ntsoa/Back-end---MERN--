@@ -11,7 +11,11 @@ class BaseService {
 
     async getById(id) {
         try {
-            return await this.model.findById(id);
+            const item = await this.model.findById(id);
+            if(!item) {
+                throw new Error(`${this.model.modelName} not found`);
+            }
+            return item;
         } catch (error) {
             throw new Error(`Error while retrieving this item : ${error.message}`);
         }
@@ -45,7 +49,7 @@ class BaseService {
             if(!item) {
                 throw new Error(`${this.model.modelName} not found`);
             }
-            return item.remove();
+            return await item.deleteOne();
         } catch (error) {
             throw new Error(`Error on deleting item : ${error.message}`);
         }

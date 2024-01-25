@@ -104,9 +104,9 @@ const getUsers = asyncHandler(async(req, res) => {
     try {
         const users = await userService.allUsers()
         if(users === 0) {
-            res.status(400).json({ message: 'No User'});
+            res.status(400).json({ message: errorMessage.collection });
         }
-        res.json(users);
+        res.json({message: successMessage.user.collection_informations ,data: users});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -121,20 +121,24 @@ const getUserById = asyncHandler(async(req, res) => {
     try {
         const userService = new UserService();
         const user = await userService.getById(req.params.id);
-        if(user) {
-            res.status(200).json({
-                _id: user._id,
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email,
-                isAdmin: user.isAdmin,
-                })
+        if(!user) {
+            return res.status(403).json({ message: errorMessage.user.not_found });
         } else {
-            res.status(404);
-            throw new Error('User not found');
+            res.status(200).json({
+                message: successMessage.user.informations,
+                data: {
+                    _id: user._id,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                    }
+                })
         } 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ 
+            message: errorMessage.default + error.message 
+        });
     }
 })
 
@@ -146,7 +150,10 @@ const getUserById = asyncHandler(async(req, res) => {
 const updateUser = asyncHandler(async(req, res) => {
     const userService = new UserService();
     const updated = await userService.update(req.params.id, req.body);
-    res.json(updated);
+    res.json({
+        message: successMessage.user.updated, 
+        data: updated
+    });
 });
 
 /**
@@ -178,7 +185,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     try {
         const updatedUserProfile = await userService.updateUserProfile(userId, userData);
-        res.json(updatedUserProfile);
+        if(updatedUserProfile.error) {
+            res.status(updatedUserProfile.status).json(updatedUserProfile.message);
+        }
+        res.status(updatedUserProfile.status).json({message: updatedUserProfile.message, data: updatedUserProfile.data });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -192,7 +202,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async(req, res) => {
     const userService = new UserService();
     const deleted = await userService.delete(req.params.id);
-    res.json(deleted);
+    if(!deleted) {
+        res.status(403).json({ message: errorMessage.user.deleted });    
+    }
+    res.json({ message: successMessage.user.deleted, data: deleted });
 })
 
 module.exports = { login, register, getUsers ,getUserProfile, getUserById, updateUser, updateUserProfile, deleteUser }

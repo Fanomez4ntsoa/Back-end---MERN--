@@ -75,7 +75,7 @@ class UserService extends BaseService {
         try {
             const user = await this.getById(userId);
             return {
-                message: 'Profile successful recovery',
+                message: successMessage.user.profile_information,
                 data: {
                     _id: user._id,
                     firstname: user.firstname,
@@ -107,11 +107,17 @@ class UserService extends BaseService {
                 
                 if (data.password) {
                     if(!data.confirmPassword) {
-                        throw new Error('Confirm password is required when updating password');
+                        return { 
+                            status: 403, 
+                            message: errorMessage.security.confirm_password 
+                        };
                     }
 
                     if (data.password !== data.confirmPassword) {
-                        throw new Error('Password and confirm password do not match');
+                        return { 
+                            status: 403, 
+                            message: errorMessage.security.confirm_password_match 
+                        };
                     }
 
                     const salt = await bcrypt.genSalt(10);
@@ -120,12 +126,16 @@ class UserService extends BaseService {
     
                 const updatedUser = await this.update(userId, user);
                 return {
-                    _id: updatedUser._id,
-                    firstname: updatedUser.firstname,
-                    lastname: updatedUser.lastname,
-                    email: updatedUser.email,
-                    isAdmin: updatedUser.isAdmin,
-                    token: generateToken(updatedUser._id),
+                    status: 202,
+                    message: successMessage.user.profile_updated,
+                    data: {
+                        _id: updatedUser._id,
+                        firstname: updatedUser.firstname,
+                        lastname: updatedUser.lastname,
+                        email: updatedUser.email,
+                        isAdmin: updatedUser.isAdmin,
+                        token: generateToken(updatedUser._id),
+                    }
                 };
             } else {
                 throw new Error('User not found');
