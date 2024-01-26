@@ -18,5 +18,9 @@ module.exports = {
         add_review: 'Avis ajouté avec succès.',
         deleted: 'Le produit vient d\'être supprimé.',
         review_deleted: 'Avis supprimé.'
+    },
+    order: {
+        created: 'Commande créer avec succès.',
+        no_order: 'Vous n\'avez pas de commande pour le moment'
     }
 };

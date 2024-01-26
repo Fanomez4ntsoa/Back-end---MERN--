@@ -1,3 +1,4 @@
+const successMessage = require('../resources/lang/fr/successMessage');
 const OrderService = require('../services/OrderService');
 const asyncHandler = require("express-async-handler");
 
@@ -11,10 +12,10 @@ const getOrders = asyncHandler(async(req, res) => {
     try {
         const orders = await orderService.allOrders()
         if(orders === 0) {
-            res.status(400).json({ message: 'No orders for now'});
+            res.status(400).json({ message: successMessage.order.no_order });
         }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 })
 
@@ -37,8 +38,7 @@ const createOrder = asyncHandler(async(req, res) => {
 
     try {
         if (!orderItems || orderItems.length === 0) {
-            res.status(400);
-            throw new Error('No order items');
+            res.status(400).json({ message: successMessage.order.no_order })
           }
         
           const orderData = {
@@ -54,17 +54,20 @@ const createOrder = asyncHandler(async(req, res) => {
         
           const createdOrder = await orderService.create(orderData);
           res.json(201).json({
-                _id: createdOrder._id,
-                user: req.user._id,
-                name: createdOrder.name,
-                brand: createdOrder.brand,
-                category: createdOrder.category,
-                description: createdOrder.description,
-                price: createdOrder.price,
-                countInStock: createdOrder.countInStock
+                message: successMessage.order.created,
+                data: {
+                    _id: createdOrder._id,
+                    user: req.user._id,
+                    name: createdOrder.name,
+                    brand: createdOrder.brand,
+                    category: createdOrder.category,
+                    description: createdOrder.description,
+                    price: createdOrder.price,
+                    countInStock: createdOrder.countInStock
+                }
           });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 });
 
@@ -82,13 +85,24 @@ const getOrderById = asyncHandler(async(req, res) => {
         );
 
         if(order) {
-            res.json(order)
+            res.json({
+                message: successMessage.order.created,
+                data: {
+                    _id: order._id,
+                    user: req.user._id,
+                    name: order.name,
+                    brand: order.brand,
+                    category: order.category,
+                    description: order.description,
+                    price: order.price,
+                    countInStock: order.countInStock
+                }
+            })
         } else {
-            res.status(404)
-            throw new Error('Order not found')
+            res.status(404).json({ message: successMessage.order.no_order })
         }   
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 })
 
@@ -112,7 +126,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
         res.json(updatedOrder);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 });
 
@@ -129,7 +143,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
         const updatedOrder = await orderService.updateOrderToDelivered(orderId);
         res.json(updatedOrder);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 });
 
