@@ -1,6 +1,8 @@
 const BaseService = require("./BaseService");
 const ProductServiceInterface = require('../contracts/ProductServiceInterface');
 const ProductModel = require("../models/ProductModel");
+const successMessage = require('../resources/lang/fr/successMessage');
+const errorMessage = require("../resources/lang/fr/errorMessage");
 
 /**
  * @implements (ProductServiceInterface)
@@ -70,7 +72,7 @@ class ProductService extends BaseService {
             }
 
             const review = {
-                name: user.name,
+                name: `${user.firstname} ${user.lastname}`,
                 rating: Number(rating),
                 comment,
                 user: user._id,
@@ -94,7 +96,52 @@ class ProductService extends BaseService {
      * @returns {Promise<Array>}
      */
     async topProducts() {
-        return ProductModel.find({}).sort({range: -1}).limit(3);
+        return ProductModel.find({}).sort({rating: -1}).limit(3);
+    }
+
+    /**
+     * Supprimer les reviews dans un produit
+     * 
+     * @param {string} productId 
+     * @param {string} reviewId 
+     */
+    async deleteReview(productId, reviewId, userId) {
+        const product = await this.model.findById(productId);
+        if (!product) {
+            return {
+                status: 404,
+                message: errorMessage.product.not_found
+            }
+        }
+
+        const reviewIndex = product.reviews.findIndex(
+            (review) => review._id.toString() === reviewId
+        );
+        if (reviewIndex === -1) {
+            return {
+                status: 404,
+                message: errorMessage.product.review_not_found
+            }
+        }
+
+        if (product.reviews[reviewIndex].user.toString() !== userId.toString() ) {
+            return {
+                status: 403,
+                message: errorMessage.product.user_not_authorized
+            }
+        }
+
+        product.reviews.splice(reviewIndex, 1);
+        product.numReviews = product.reviews.length;
+
+        if (product.numReviews > 0) {
+            product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+        } else {
+            product.rating = 0;
+        }
+
+        await product.save();
+        return { status: 200, message: successMessage.product.review_deleted };
     }
 }
 

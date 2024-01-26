@@ -23,6 +23,13 @@ class ProductServiceInterface {
      */
     topProducts() {}
 
+    /**
+     * 
+     * @param {string} productId 
+     * @param {string} reviewId 
+     */
+    deleteReview(productId, reviewId) {}
+
 }
 
 module.exports = ProductServiceInterface;

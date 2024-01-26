@@ -17,7 +17,10 @@ const getProducts = asyncHandler(async(req, res) => {
     const brand = req.query.brand || '';
 
     const result = await productService.allProducts(pageNumber, pageSize, keyword, category, brand);
-    res.json(result);
+    res.json({
+      message: successMessage.product.collection_products, 
+      data: result
+    });
 })
 
 /**
@@ -66,12 +69,11 @@ const createProduct = asyncHandler(async(req, res) => {
           }
         });
       } else {
-        res.status(400)
-        throw new Error('Invalid user data');
+        res.status(400).json({ message: errorMessage.product.invalid_data });
       }
   
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ message: errorMessage.default });
     }
 });
 
@@ -81,15 +83,32 @@ const createProduct = asyncHandler(async(req, res) => {
  * @access Public
  */
 const getProductById = asyncHandler(async(req, res) => {
-    const productService = new ProductService();
-    const product = await productService.getById(req.params.id);
+    try {
+        const productService = new ProductService();
+        const product = await productService.getById(req.params.id);
 
-    if(product) {
-        res.json(product)
-    } else {
-        res.status(404);
-        throw new Error('Product not found');
+        if(!product) {
+            res.status(403).json({ message: errorMessage.product.not_product });
+        } else {
+            res.status(200).json({
+                message: successMessage.product.informations,
+                data: {
+                    _id: product._id,
+                    name: product.name,
+                    brand: product.brand,
+                    category: product.category,
+                    description: product.description,
+                    rating: product.rating,
+                    price: product.price,
+                    countInStock: product.countInStock,
+                    reviews: product.reviews
+                }
+            })
+        }
+    } catch (error) {
+        res.status(500).json({ message: `${errorMessage.default}` });
     }
+    
 });
 
 /**
@@ -100,7 +119,10 @@ const getProductById = asyncHandler(async(req, res) => {
 const updateProduct = asyncHandler(async(req, res) => {
     const productService = new ProductService();
     const updated = await productService.update(req.params.id, req.body);
-    res.json(updated);
+    res.json({
+        message: successMessage.product.updated,
+        data: updated
+    });
 });
 
 /**
@@ -111,7 +133,10 @@ const updateProduct = asyncHandler(async(req, res) => {
 const deleteProduct = asyncHandler(async(req, res) => {
     const productService = new ProductService();
     const deleted = await productService.delete(req.params.id);
-    res.json(deleted);
+    if(!deleted) {
+        res.status(403).json({ message: errorMessage.product.deleted });  
+    }
+    res.json({ message: successMessage.product.deleted, data: deleted });
 });
 
 /**
@@ -131,9 +156,9 @@ const createProductReview = asyncHandler(async (req, res) => {
         comment
       );
   
-      res.status(201).json({ message: 'Review added' });
+      res.status(201).json({ message: successMessage.product.add_review });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(500).json({ message: errorMessage.default });
     }
 });
 
@@ -145,7 +170,30 @@ const createProductReview = asyncHandler(async (req, res) => {
 const getTopProducts = asyncHandler(async (req, res) => {
     const productService = new ProductService();
     const topProducts = await productService.topProducts();
-    res.json(topProducts);
-  });
+    res.json({ 
+        message: successMessage.product.top, 
+        data: topProducts 
+    });
+});
 
-module.exports = { getProducts, createProduct, getProductById, updateProduct, deleteProduct, createProductReview, getTopProducts };
+/**
+ * @description Delete review on product by id
+ * @route DELETE /api/product/:id/reviews/:id
+ * @access Private
+ */
+const deleteReview = asyncHandler(async (req, res) => {
+    const productService = new ProductService();
+    const { productId, reviewsId } = req.params;
+
+    try {
+        const result = await productService.deleteReview(productId, reviewsId, req.user._id);
+        if(!result) {
+            res.status(result.status).json({ message: result.message });
+        }
+        res.status(result.status).json({ message: result.message });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+});
+
+module.exports = { getProducts, createProduct, getProductById, updateProduct, deleteProduct, createProductReview, getTopProducts, deleteReview };

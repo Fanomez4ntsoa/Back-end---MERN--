@@ -24,7 +24,7 @@ const login = asyncHandler(async(req, res) => {
         }
         
     } catch (error) {
-        res.status(500).json({ error: error.message});
+        res.status(500).json({ message: errorMessage.default });
     }
 });
 
@@ -90,7 +90,7 @@ const register = asyncHandler(async(req, res) => {
         res.status(403).json({ message: errorMessage.default});
         }
     } catch (error) {
-        res.status(500).json({ message: errorMessage.default + error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 })
 
@@ -108,7 +108,7 @@ const getUsers = asyncHandler(async(req, res) => {
         }
         res.json({message: successMessage.user.collection_informations ,data: users});
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: errorMessage.default });
     }
 });
 
@@ -136,9 +136,7 @@ const getUserById = asyncHandler(async(req, res) => {
                 })
         } 
     } catch (error) {
-        res.status(500).json({ 
-            message: errorMessage.default + error.message 
-        });
+        res.status(500).json({ message: errorMessage.default });
     }
 })
 
@@ -169,7 +167,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
         const userProfile = await userService.userProfile(userId);
         res.json(userProfile);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(404).json({ message: errorMessage.default });
     }
 });
 
@@ -190,7 +188,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         }
         res.status(updatedUserProfile.status).json({message: updatedUserProfile.message, data: updatedUserProfile.data });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ message: errorMessage.default });
     }
 });
 
