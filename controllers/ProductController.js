@@ -1,5 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const ProductService = require("../services/ProductService");
+const errorMessage = require('../resources/lang/fr/errorMessage');
+const successMessage = require('../resources/lang/fr/successMessage');
 
 /**
  * @description Fetch All products
@@ -10,9 +12,11 @@ const getProducts = asyncHandler(async(req, res) => {
     const productService = new ProductService();
     const pageSize = 10;
     const pageNumber = Number(req.query.pageNumber) || 1;
-    const keyword = req.query.keyword || '';
+    const keyword = req.query.keywords || '';
+    const category = req.query.category || '';
+    const brand = req.query.brand || '';
 
-    const result = await productService.allProducts(pageNumber, pageSize, keyword);
+    const result = await productService.allProducts(pageNumber, pageSize, keyword, category, brand);
     res.json(result);
 })
 
@@ -24,7 +28,6 @@ const getProducts = asyncHandler(async(req, res) => {
 const createProduct = asyncHandler(async(req, res) => {
     const productService = new ProductService();
     const {
-        user,
         name,
         image,
         brand,
@@ -50,6 +53,8 @@ const createProduct = asyncHandler(async(req, res) => {
 
       if(createdProduct) {
         res.status(201).json({
+          message: successMessage.product.created,
+          data: {
             _id: createdProduct._id,
             user: req.user._id,
             name: createdProduct.name,
@@ -58,6 +63,7 @@ const createProduct = asyncHandler(async(req, res) => {
             description: createdProduct.description,
             price: createdProduct.price,
             countInStock: createdProduct.countInStock
+          }
         });
       } else {
         res.status(400)

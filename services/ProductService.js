@@ -18,14 +18,22 @@ class ProductService extends BaseService {
      * @param {string} keywords 
      * @returns 
      */
-    async allProducts(pageNumber = 1, pageSize = 10, keywords = '') {
+    async allProducts(pageNumber = 1, pageSize = 10, keywords = '', category = '', brand = '') {
         const skip = pageSize * (pageNumber - 1);
-        const query = keyword ? {
-            name: { 
-                $regex : keywords,
+        const query = {};
+
+        if (keywords) {
+            query.name = {
+                $regex: keywords,
                 $options: 'i',
-            }
-        } : {};
+            };
+        }
+        if (brand) {
+            query.brand = brand;
+        }
+        if (category) {
+            query.category = category;
+        }
 
         const count = await this.model.countDocuments(query);
         const products = await this.model

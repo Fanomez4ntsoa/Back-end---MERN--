@@ -3,9 +3,8 @@ const { getProducts, createProduct, createProductReview, getTopProducts, getProd
 const { protect, admin } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.route('/')
-    .get(getProducts)
-    .post(protect, admin, createProduct)
+router.route('/').get(getProducts)
+router.route('/').post(protect, admin, createProduct)
 router.route('/:id/reviews').post(protect, createProductReview)
 router.get('/top', getTopProducts)
 router.route('/:id')
