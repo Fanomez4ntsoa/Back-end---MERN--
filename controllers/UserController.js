@@ -8,7 +8,7 @@ const successMessage = require('../resources/lang/fr/successMessage');
 
 /**
  * @description Authentification user
- * @route POST /api/user/login
+ * @route POST /api/users/login
  * @access Public
  */
 const login = asyncHandler(async(req, res) => {
@@ -30,7 +30,7 @@ const login = asyncHandler(async(req, res) => {
 
 /**
  * @description Register user
- * @route POST /api/user/register
+ * @route POST /api/users/
  * @access Public
  */
 const register = asyncHandler(async(req, res) => {
@@ -114,7 +114,7 @@ const getUsers = asyncHandler(async(req, res) => {
 
 /**
  * @description Get User by Id
- * @route GET /api/user/:id
+ * @route GET /api/users/:id
  * @access Private/Admin
  */
 const getUserById = asyncHandler(async(req, res) => {
@@ -142,7 +142,7 @@ const getUserById = asyncHandler(async(req, res) => {
 
 /**
  * @description Update User by Id
- * @route PUT /api/user/:id
+ * @route PUT /api/users/:id
  * @access Private/Admin
  */
 const updateUser = asyncHandler(async(req, res) => {
@@ -156,7 +156,7 @@ const updateUser = asyncHandler(async(req, res) => {
 
 /**
  * @description Get user profile
- * @route GET /api/user/profile
+ * @route GET /api/users/profile
  * @access Private
  */
 const getUserProfile = asyncHandler(async (req, res) => {
@@ -173,7 +173,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 /**
  * @description Update user profile
- * @route PUT /api/user/profile
+ * @route PUT /api/users/profile
  * @access Private
  */
 const updateUserProfile = asyncHandler(async (req, res) => {
@@ -194,7 +194,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
 /**
  * @description Delete user by id
- * @route DELETE /api/user/:id
+ * @route DELETE /api/users/:id
  * @access Private/Admin
  */
 const deleteUser = asyncHandler(async(req, res) => {
