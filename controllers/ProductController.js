@@ -40,7 +40,7 @@ const createProduct = asyncHandler(async(req, res) => {
         price,
         countInStock
     } = req.body;
-
+    
     try {
       const createdProduct = await productService.create({
         user: req.user._id,
@@ -79,7 +79,7 @@ const createProduct = asyncHandler(async(req, res) => {
 
 /**
  * @description Get Product by Id
- * @route GET /api/product/:id
+ * @route GET /api/products/:id
  * @access Public
  */
 const getProductById = asyncHandler(async(req, res) => {
@@ -113,7 +113,7 @@ const getProductById = asyncHandler(async(req, res) => {
 
 /**
  * @description Update Product
- * @route PUT /api/product/:id
+ * @route PUT /api/products/:id
  * @access Private/Admin
  */
 const updateProduct = asyncHandler(async(req, res) => {
@@ -127,7 +127,7 @@ const updateProduct = asyncHandler(async(req, res) => {
 
 /**
  * @description Delete Product
- * @route DELETE /api/product/:id
+ * @route DELETE /api/products/:id
  * @access Private/Admin
  */
 const deleteProduct = asyncHandler(async(req, res) => {
@@ -141,7 +141,7 @@ const deleteProduct = asyncHandler(async(req, res) => {
 
 /**
  * @description Create review for product
- * @route POST /api/product/:id/reviews
+ * @route POST /api/products/:id/reviews
  * @access Private
  */
 const createProductReview = asyncHandler(async (req, res) => {
@@ -178,7 +178,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
 
 /**
  * @description Delete review on product by id
- * @route DELETE /api/product/:id/reviews/:id
+ * @route DELETE /api/products/:id/reviews/:id
  * @access Private
  */
 const deleteReview = asyncHandler(async (req, res) => {

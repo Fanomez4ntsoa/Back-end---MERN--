@@ -1,4 +1,5 @@
 const successMessage = require('../resources/lang/fr/successMessage');
+const errorMessage = require('../resources/lang/fr/errorMessage');
 const OrderService = require('../services/OrderService');
 const asyncHandler = require("express-async-handler");
 
@@ -21,7 +22,7 @@ const getOrders = asyncHandler(async(req, res) => {
 
 /**
  * @description Create an order
- * @route POST /api/order/
+ * @route POST /api/orders/
  * @access Private
  */
 const createOrder = asyncHandler(async(req, res) => {
@@ -73,7 +74,7 @@ const createOrder = asyncHandler(async(req, res) => {
 
 /**
  * @description Get order by Id
- * @route GET /api/order/:id
+ * @route GET /api/orders/:id
  * @access Private
  */
 const getOrderById = asyncHandler(async(req, res) => {
@@ -108,7 +109,7 @@ const getOrderById = asyncHandler(async(req, res) => {
 
 /**
  * @description Updated order to paid
- * @route GET /api/order/:id/pay
+ * @route GET /api/orders/:id/pay
  * @access Private
  */
 const updateOrderToPaid = asyncHandler(async (req, res) => {
@@ -132,7 +133,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
 /**
  * @description Updated order to delivered
- * @route GET /api/order/:id/devivered
+ * @route GET /api/orders/:id/devivered
  * @access Private/Admin
  */
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
@@ -149,7 +150,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 
 /**
  * @description Get logged in user orders
- * @route GET /api/order/myorders
+ * @route GET /api/orders/myorders
  * @access Private/Admin
  */
 const getMyOrders = asyncHandler(async (req, res) => {

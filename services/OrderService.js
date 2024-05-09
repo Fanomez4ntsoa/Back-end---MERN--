@@ -13,7 +13,12 @@ class OrderService extends BaseService {
      */
     async allOrders() {
         try {
-            return await OrderModel.find({});
+            const order = await OrderModel.find({});
+            if(!order) {
+                throw new Error(`Current orders not available : ${error.message}`)
+            } else {
+                return order;
+            }
         } catch (error) {
             throw new Error(`Error on getting all orders : ${error.message}`)
         }
