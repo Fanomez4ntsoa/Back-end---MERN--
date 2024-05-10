@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
+const cors = require('cors');
 const { notFound, errorHandler } = require('./middlewares/errorMiddleware');
 const databaseConnection = require('./config/connection');
 const UserRoute = require('./routes/UserRoute');
@@ -12,7 +13,7 @@ dotenv.config();
 // Connection base de donnée
 databaseConnection();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const ENV = process.env.NODE_ENV === 'development';
 
 if(ENV) {
@@ -20,6 +21,8 @@ if(ENV) {
 }
 
 app.use(express.json());
+
+app.use(cors());
 
 // Routes
 app.get('/api/', (req, res) => {
